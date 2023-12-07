@@ -292,7 +292,8 @@ if selected_track_id:
             predicted_monthly_revenue = predicted_monthly_streams * 0.004
 
             # Jetzt hast du die vorhergesagten Werte, die du in deinem Hauptcode verwenden kannst
-            st.header("Prediction results:")
+            #st.header("Prediction results:")
+            st.markdown("<h1 style='text-align: center; color: black;'>Prediction results:</h1>", unsafe_allow_html=True)
 
             predicted_score_text = f"Predicted Popularity Score for the song: {int(round(predicted_score[0])):,}"
             # predicted_monthly_listeners_text = f"**Predicted Monthly Listeners:** {int(round(predicted_monthly_listeners[0])):,}"
@@ -341,7 +342,7 @@ if selected_track_id:
                 )
 
                 # Bedingte Anzeige von zusätzlichem Text basierend auf dem Revenue
-                if predicted_monthly_revenue[0] < 20000:
+                if predicted_score[0] < 50:
                     st.markdown(
                         f"<p style='font-size: 26px; color: #FF0000; text-align: center; font-weight: bold;'>The predicted score and monthly revenue is pretty low. Probably we should not sign {artist_name}</p>",
                         unsafe_allow_html=True
