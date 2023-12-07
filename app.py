@@ -107,7 +107,21 @@ else:
 # Schritt 2: Anzeigen der Track-Informationen und Audio-Features
 if selected_track_id:
     # Display the prediction button
-    predict_button = st.button("Predict")
+    predict_button = st.button("Predict the popularity")
+    # Display the listen button
+    listen_button = st.button("Listen to the song")
+    # Play song preview
+    if listen_button:
+        track_data, audio_features = get_track_info_and_features(selected_track_id, spotify_access_token)
+        preview_url = track_data.get('preview_url', None)
+        if preview_url:
+            st.subheader("Audio Preview:")
+
+            # Verwende st.audio mit JavaScript autoplay
+            audio_code = f'<audio controls autoplay><source src="{preview_url}" type="audio/mp3"></audio>'
+            st.markdown(audio_code, unsafe_allow_html=True)
+        else:
+            st.warning("No audio preview available for this track.")
     # Continue with predictions only if the Predict button is clicked
     if predict_button:
         progress_text = "The prediction is being calculated... Please wait."
@@ -270,8 +284,8 @@ if selected_track_id:
             st.header("Prediction results:")
 
             predicted_score_text = f"Predicted Popularity Score for the song: {int(round(predicted_score[0])):,}"
-            predicted_monthly_listeners_text = f"**Predicted Monthly Listeners:** {int(round(predicted_monthly_listeners[0])):,}"
-            predicted_monthly_streams_text = f"**Predicted Monthly Streams:** {int(round(predicted_monthly_streams[0])):,}"
+            # predicted_monthly_listeners_text = f"**Predicted Monthly Listeners:** {int(round(predicted_monthly_listeners[0])):,}"
+            # predicted_monthly_streams_text = f"**Predicted Monthly Streams:** {int(round(predicted_monthly_streams[0])):,}"
             predicted_monthly_revenue_text = f"Predicted Monthly Revenue for the artist of the song: ${round(predicted_monthly_revenue[0], 2):,}"
 
             # Verwende 'success' für positive Ergebnisse
@@ -279,25 +293,52 @@ if selected_track_id:
             if prediction_data.iloc[0].sum() == 0:
                 st.error("Be careful with the result! It could be inaccurate because no genre was found for the song that fits the prediction model.", icon="🚨")
 
+            # Erstelle einen Container mit abweichender Hintergrundfarbe
             with st.container():
+                # Save artist name
+                artist_name = track_data['artists'][0]['name']
+                # Setze die Farbe des Scores basierend auf der Bedingung
+                score_color = "#1DB954" if predicted_score[0] >= 50 else "#FF0000"
+                
+                # Extrahiere den Text vor dem Doppelpunkt
+                prefix_text = predicted_score_text.split(":")[0]
+
+                # Extrahiere den Text nach dem Doppelpunkt
+                suffix_text = predicted_score_text.split(":")[1]
+
                 # Füge die größere und auffälligere Ausgabe hinzu
                 st.markdown(
-                    f"<h2 style='color: #1DB954; font-size: 30px;'>{predicted_score_text}</h2>", 
-                    unsafe_allow_html=True
-                )
-                # st.markdown(
-                #     f"<p style='font-size: 20px;'>{predicted_monthly_listeners_text}</p>",
-                #     unsafe_allow_html=True
-                # )
-                # st.markdown(
-                #     f"<p style='font-size: 20px;'>{predicted_monthly_streams_text}</p>",
-                #     unsafe_allow_html=True
-                # )
-                st.markdown(
-                    f"<h2 style='color: #1DB954; font-size: 30px;'>{predicted_monthly_revenue_text}</h2>", 
+                    f"<p style='font-size: 20px; color: black;'>{prefix_text}: </p>"
+                    f"<p style='color: {score_color}; font-size: 30px;'>{suffix_text}</p>", 
                     unsafe_allow_html=True
                 )
 
+                # Setze die Farbe des Revenue basierend auf der Bedingung
+                revenue_color = "#1DB954" if predicted_monthly_revenue[0] >= 20000 else "#FF0000"
+                
+                # Extrahiere den Text vor dem Doppelpunkt
+                prefix_revenue = predicted_monthly_revenue_text.split(":")[0]
+
+                # Extrahiere den Text nach dem Doppelpunkt
+                suffix_revenue = predicted_monthly_revenue_text.split(":")[1]
+
+                st.markdown(
+                    f"<p style='font-size: 20px; color: black;'>{prefix_revenue}: </p>"
+                    f"<p style='color: black; font-size: 30px;'>{suffix_revenue}</p>", 
+                    unsafe_allow_html=True
+                )
+
+                # Bedingte Anzeige von zusätzlichem Text basierend auf dem Revenue
+                if predicted_monthly_revenue[0] < 20000:
+                    st.markdown(
+                        f"<p style='font-size: 16px; color: #FF0000;'>The predicted score and monthly revenue is pretty low. Probably we should not sign {artist_name}</p>",
+                        unsafe_allow_html=True
+                    )
+                else:
+                    st.markdown(
+                        f"<p style='font-size: 16px; color: #1DB954;'>It seems, {artist_name} might be a real talent. Let's get in touch with him/her!</p>",
+                        unsafe_allow_html=True
+                    )
              # Extrahiere die Vorschau-URL des Tracks
             preview_url = track_data.get('preview_url', None)
             

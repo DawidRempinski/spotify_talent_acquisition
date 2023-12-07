@@ -1,17 +1,3 @@
-# mkdir -p ~/.streamlit/
-
-# echo "\
-# [general]\n\
-# email = \"dawid@rempinski.de\"\n\
-# " > ~/.streamlit/credentials.toml
-
-# echo "\
-# [server]\n\
-# headless = true\n\
-# enableCORS=false\n\
-# port = $PORT\n\
-# " > ~/.streamlit/config.toml
-
 mkdir -p ~/.streamlit/
 
 echo "\
@@ -29,7 +15,7 @@ port = $PORT\n\
 echo "\
 [theme]\n\
 primaryColor = '#7792E3'\n\
-backgroundColor = '#aaff80'\n\
+backgroundColor = '#535353'\n\
 secondaryBackgroundColor = '#eafbec'\n\
 textColor = '#000000'\n\
 font = 'sans serif'\n\
