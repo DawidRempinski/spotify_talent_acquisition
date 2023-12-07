@@ -180,7 +180,7 @@ if selected_track_id:
                 'instrumentalness': [instrumentalness]
             })
 
-            # Extrahiere das Genre des Künstlers über einen separaten API-Aufruf
+            # Stelle die Verbindung mit der Spotify API her, um die Genres des Künstlers zu erhalten
             artist_id = track_data['artists'][0]['id']
             artist_info_url = f'https://api.spotify.com/v1/artists/{artist_id}'
             artist_headers = {'Authorization': f'Bearer {spotify_access_token}'}
@@ -197,13 +197,8 @@ if selected_track_id:
                 st.error(f"Error getting artist information for artist ID {artist_id}: {e}")
                 artist_genres = []
 
-            # st.subheader("Track Information:")
-            # st.write(f"Name: {track_data['name']}")
-            # st.write(f"Artist: {track_data['artists'][0]['name']}")
-            # st.write(f"Popularity: {track_data['popularity']}")
-            # st.write(f"Release Date: {track_data['album']['release_date']}")
-            # st.write(f"Track ID: {track_data['id']}")
-            # st.write(f"Artist genres: {artist_genres}")
+            # Füge Debugging-Ausgabe hinzu
+            #st.write(f"Artist Genres: {artist_genres}")
 
             # DataFrame für bekannte Genres erstellen
             prediction_data = pd.DataFrame(columns=[
@@ -230,7 +225,7 @@ if selected_track_id:
                     matching_columns.extend([col for col in prediction_data.columns if "hip-hop" in col.replace('genres_', '').lower() or "rap" in col.replace('genres_', '').lower()])
 
                 # Debug-Ausgabe für die gefundenen und verglichenen Spalten
-                print(f"Genre: {lowercase_genre}, Matching Columns: {matching_columns}")
+                #st.write(f"Genre: {lowercase_genre}, Matching Columns: {matching_columns}")
 
                 if matching_columns:
                     # Setze die entsprechende Spalte auf 1, aber nur für "K-Pop" (nicht "Pop"), "Hip Hop" und "Rap"
@@ -242,6 +237,10 @@ if selected_track_id:
                     elif "hip-hop" in matching_columns[0].lower() or "rap" in matching_columns[0].lower():
                         # Setze die "Hip Hop" und "Rap"-Spalten nur, wenn das Genre "hip hop" oder "rap" ist
                         prediction_data.at[0, matching_columns[0]] = 1
+
+            # Füge Debugging-Ausgabe für das fertige prediction_data hinzu
+            #st.write("Final Prediction Data:")
+            ##st.write(prediction_data)
 
             
             # st.subheader("Track Information:")
@@ -309,19 +308,20 @@ if selected_track_id:
             with st.container():
                 # Save artist name
                 artist_name = track_data['artists'][0]['name']
+                
                 # Setze die Farbe des Scores basierend auf der Bedingung
                 score_color = "#1DB954" if predicted_score[0] >= 50 else "#FF0000"
                 
                 # Extrahiere den Text vor dem Doppelpunkt
                 prefix_text = predicted_score_text.split(":")[0]
-
+                
                 # Extrahiere den Text nach dem Doppelpunkt
                 suffix_text = predicted_score_text.split(":")[1]
 
                 # Füge die größere und auffälligere Ausgabe hinzu
                 st.markdown(
-                    f"<p style='font-size: 20px; color: black;'>{prefix_text}:"
-                    f"<span style='color: {score_color}; font-size: 30px;'>{suffix_text}</span></p>", 
+                    f"<p style='font-size: 26px; color: black; text-align: center;'>{prefix_text}:"
+                    f"<span style='color: {score_color}; font-size: 26px; font-weight: bold;'>{suffix_text}</span></p>", 
                     unsafe_allow_html=True
                 )
 
@@ -330,27 +330,28 @@ if selected_track_id:
                 
                 # Extrahiere den Text vor dem Doppelpunkt
                 prefix_revenue = predicted_monthly_revenue_text.split(":")[0]
-
+                
                 # Extrahiere den Text nach dem Doppelpunkt
                 suffix_revenue = predicted_monthly_revenue_text.split(":")[1]
 
                 st.markdown(
-                    f"<p style='font-size: 20px; color: black;'>{prefix_revenue}: "
-                    f"<span style='color: black; font-size: 30px;'>{suffix_revenue}</span></p>", 
+                    f"<p style='font-size: 26px; color: black; text-align: center;'>{prefix_revenue}: "
+                    f"<span style='color: black; font-size: 26px; font-weight: bold;'>{suffix_revenue}</span></p>", 
                     unsafe_allow_html=True
                 )
 
                 # Bedingte Anzeige von zusätzlichem Text basierend auf dem Revenue
                 if predicted_monthly_revenue[0] < 20000:
                     st.markdown(
-                        f"<p style='font-size: 30px; color: #FF0000; text-align: center;'>The predicted score and monthly revenue is pretty low. Probably we should not sign {artist_name}</p>",
+                        f"<p style='font-size: 26px; color: #FF0000; text-align: center;'>The predicted score and monthly revenue is pretty low. Probably we should not sign {artist_name}</p>",
                         unsafe_allow_html=True
                     )
                 else:
                     st.markdown(
-                        f"<p style='font-size: 30px; color: #1DB954; text-align: center;'>It seems, {artist_name} might be a real talent. Let's get in touch with him/her!</p>",
+                        f"<p style='font-size: 26px; color: #1DB954; text-align: center;'>It seems, {artist_name} might be a real talent. Let's get in touch with him/her!</p>",
                         unsafe_allow_html=True
                     )
+
             # Extrahiere die Vorschau-URL des Tracks
             preview_url = track_data.get('preview_url', None)
             
