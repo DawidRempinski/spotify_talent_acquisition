@@ -343,12 +343,12 @@ if selected_track_id:
                 # Bedingte Anzeige von zusätzlichem Text basierend auf dem Revenue
                 if predicted_monthly_revenue[0] < 20000:
                     st.markdown(
-                        f"<p style='font-size: 26px; color: #FF0000; text-align: center;'>The predicted score and monthly revenue is pretty low. Probably we should not sign {artist_name}</p>",
+                        f"<p style='font-size: 26px; color: #FF0000; text-align: center; font-weight: bold;'>The predicted score and monthly revenue is pretty low. Probably we should not sign {artist_name}</p>",
                         unsafe_allow_html=True
                     )
                 else:
                     st.markdown(
-                        f"<p style='font-size: 26px; color: #1DB954; text-align: center;'>It seems, {artist_name} might be a real talent. Let's get in touch with him/her!</p>",
+                        f"<p style='font-size: 26px; color: #1DB954; text-align: center; font-weight: bold;'>It seems, {artist_name} might be a real talent. Let's get in touch with him/her!</p>",
                         unsafe_allow_html=True
                     )
 
