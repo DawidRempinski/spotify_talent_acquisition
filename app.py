@@ -331,12 +331,12 @@ if selected_track_id:
                 # Bedingte Anzeige von zusätzlichem Text basierend auf dem Revenue
                 if predicted_monthly_revenue[0] < 20000:
                     st.markdown(
-                        f"<p style='font-size: 16px; color: #FF0000;'>The predicted score and monthly revenue is pretty low. Probably we should not sign {artist_name}</p>",
+                        f"<p style='font-size: 30px; color: #FF0000;'>The predicted score and monthly revenue is pretty low. Probably we should not sign {artist_name}</p>",
                         unsafe_allow_html=True
                     )
                 else:
                     st.markdown(
-                        f"<p style='font-size: 16px; color: #1DB954;'>It seems, {artist_name} might be a real talent. Let's get in touch with him/her!</p>",
+                        f"<p style='font-size: 30px; color: #1DB954;'>It seems, {artist_name} might be a real talent. Let's get in touch with him/her!</p>",
                         unsafe_allow_html=True
                     )
              # Extrahiere die Vorschau-URL des Tracks
