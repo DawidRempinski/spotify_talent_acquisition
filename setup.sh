@@ -15,7 +15,7 @@ port = $PORT\n\
 echo "\
 [theme]\n\
 primaryColor = '#7792E3'\n\
-backgroundColor = '#000000'\n\
+backgroundColor = '#ffffff'\n\
 secondaryBackgroundColor = '#eafbec'\n\
 textColor = '#000000'\n\
 font = 'sans serif'\n\
