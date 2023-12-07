@@ -72,9 +72,21 @@ spotify_access_token = get_access_token(spotify_client_id, spotify_client_secret
 st.set_page_config(
     page_title="Spotify Talent Finder",
     page_icon="🎸",
-    layout="wide",
+    #layout="wide",
     initial_sidebar_state="collapsed",  # Sidebar standardmäßig zugeklappt
 )
+
+# Remove whitespace from the top of the page and sidebar
+st.markdown("""
+        <style>
+               .block-container {
+                    padding-top: 1rem;
+                    padding-bottom: 0rem;
+                    padding-left: 0rem;
+                    padding-right: 0rem;
+                }
+        </style>
+        """, unsafe_allow_html=True)
 
 st.title("Spotify Talent Finder")
 
@@ -290,8 +302,8 @@ if selected_track_id:
 
             # Verwende 'success' für positive Ergebnisse
             # Wenn kein passendes Genre gefunden wurde, gib eine Warnung aus
-            if prediction_data.iloc[0].sum() == 0:
-                st.error("Be careful with the result! It could be inaccurate because no genre was found for the song that fits the prediction model.", icon="🚨")
+            #if prediction_data.iloc[0].sum() == 0:
+                #st.error("Be careful with the result! It could be inaccurate because no genre was found for the song that fits the prediction model.", icon="🚨")
 
             # Erstelle einen Container mit abweichender Hintergrundfarbe
             with st.container():
@@ -308,8 +320,8 @@ if selected_track_id:
 
                 # Füge die größere und auffälligere Ausgabe hinzu
                 st.markdown(
-                    f"<p style='font-size: 20px; color: black;'>{prefix_text}: </p>"
-                    f"<p style='color: {score_color}; font-size: 30px;'>{suffix_text}</p>", 
+                    f"<p style='font-size: 20px; color: black;'>{prefix_text}:"
+                    f"<span style='color: {score_color}; font-size: 30px;'>{suffix_text}</span></p>", 
                     unsafe_allow_html=True
                 )
 
@@ -323,23 +335,23 @@ if selected_track_id:
                 suffix_revenue = predicted_monthly_revenue_text.split(":")[1]
 
                 st.markdown(
-                    f"<p style='font-size: 20px; color: black;'>{prefix_revenue}: </p>"
-                    f"<p style='color: black; font-size: 30px;'>{suffix_revenue}</p>", 
+                    f"<p style='font-size: 20px; color: black;'>{prefix_revenue}: "
+                    f"<span style='color: black; font-size: 30px;'>{suffix_revenue}</span></p>", 
                     unsafe_allow_html=True
                 )
 
                 # Bedingte Anzeige von zusätzlichem Text basierend auf dem Revenue
                 if predicted_monthly_revenue[0] < 20000:
                     st.markdown(
-                        f"<p style='font-size: 30px; color: #FF0000;'>The predicted score and monthly revenue is pretty low. Probably we should not sign {artist_name}</p>",
+                        f"<p style='font-size: 30px; color: #FF0000; text-align: center;'>The predicted score and monthly revenue is pretty low. Probably we should not sign {artist_name}</p>",
                         unsafe_allow_html=True
                     )
                 else:
                     st.markdown(
-                        f"<p style='font-size: 30px; color: #1DB954;'>It seems, {artist_name} might be a real talent. Let's get in touch with him/her!</p>",
+                        f"<p style='font-size: 30px; color: #1DB954; text-align: center;'>It seems, {artist_name} might be a real talent. Let's get in touch with him/her!</p>",
                         unsafe_allow_html=True
                     )
-             # Extrahiere die Vorschau-URL des Tracks
+            # Extrahiere die Vorschau-URL des Tracks
             preview_url = track_data.get('preview_url', None)
             
             if preview_url:
