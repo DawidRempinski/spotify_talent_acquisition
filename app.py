@@ -7,6 +7,7 @@ from sklearn.preprocessing import RobustScaler
 import joblib
 import numpy as np
 import time
+import os
 
 # Spotify API-Funktionen
 
@@ -61,9 +62,11 @@ def get_track_info_and_features(track_id, access_token):
 
 # Streamlit-App-Code
 
+# Port aus der Umgebungsvariable oder Standardport 8501 lesen
+port = int(os.environ.get("PORT", 8501))
+
 if __name__ == "__main__":
-    # Die Port-Zuweisung erfolgt automatisch durch Heroku
-    st.set_option('server.port', int(os.environ.get('PORT', 5000)))
+    st.set_option('server.port', port)
     st.run_app()
 
 # Spotify Client ID und Client Secret
