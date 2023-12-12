@@ -61,6 +61,11 @@ def get_track_info_and_features(track_id, access_token):
 
 # Streamlit-App-Code
 
+if __name__ == "__main__":
+    # Die Port-Zuweisung erfolgt automatisch durch Heroku
+    st.set_option('server.port', int(os.environ.get('PORT', 5000)))
+    st.run_app()
+
 # Spotify Client ID und Client Secret
 spotify_client_id = "6e91e7188379440ebbd0eb32a0e80c0f"
 spotify_client_secret = "ce22014bdc8e4c2b9fd79103289d9154"
