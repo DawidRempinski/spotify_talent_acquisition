@@ -62,13 +62,6 @@ def get_track_info_and_features(track_id, access_token):
 
 # Streamlit-App-Code
 
-# Port aus der Umgebungsvariable oder Standardport 8501 lesen
-port = int(os.environ.get("PORT", 8501))
-
-if __name__ == "__main__":
-    st.set_option('server.port', port)
-    st.run_app()
-
 # Spotify Client ID und Client Secret
 spotify_client_id = "6e91e7188379440ebbd0eb32a0e80c0f"
 spotify_client_secret = "ce22014bdc8e4c2b9fd79103289d9154"
