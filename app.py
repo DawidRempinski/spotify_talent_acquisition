@@ -198,7 +198,7 @@ if selected_track_id:
                 artist_genres = []
 
             # Füge Debugging-Ausgabe hinzu
-            #st.write(f"Artist Genres: {artist_genres}")
+            st.write(f"Artist Genres: {artist_genres}")
 
             # DataFrame für bekannte Genres erstellen
             prediction_data = pd.DataFrame(columns=[
@@ -222,25 +222,24 @@ if selected_track_id:
 
                 # Prüfe zusätzlich auf "hip hop" und "rap" als Teil des Genre-Namens
                 if "hip hop" in lowercase_genre or "rap" in lowercase_genre:
-                    matching_columns.extend([col for col in prediction_data.columns if "hip-hop" in col.replace('genres_', '').lower() or "rap" in col.replace('genres_', '').lower()])
+                    matching_columns.extend([col for col in prediction_data.columns if "hip-hop" in col.replace('genres_', '').lower()])
+
+                # Prüfe auf K-Pop und Pop
+                if lowercase_genre == "k-pop":
+                    matching_columns.extend([col for col in prediction_data.columns if "k-pop" in col.replace('genres_', '').lower()])
+                elif "pop" in lowercase_genre:
+                    matching_columns.extend([col for col in prediction_data.columns if "pop" in col.replace('genres_', '').lower() and "k-pop" not in col.replace('genres_', '').lower()])
 
                 # Debug-Ausgabe für die gefundenen und verglichenen Spalten
-                #st.write(f"Genre: {lowercase_genre}, Matching Columns: {matching_columns}")
+                st.write(f"Genre: {lowercase_genre}, Matching Columns: {matching_columns}")
 
                 if matching_columns:
-                    # Setze die entsprechende Spalte auf 1, aber nur für "K-Pop" (nicht "Pop"), "Hip Hop" und "Rap"
-                    if lowercase_genre == "k-pop":
-                        prediction_data.at[0, matching_columns[0]] = 1
-                    elif "pop" in matching_columns[0].lower():
-                        # Setze die "Pop"-Spalte nur, wenn das Genre nicht "K-Pop" ist
-                        prediction_data.at[0, matching_columns[0]] = 1
-                    elif "hip-hop" in matching_columns[0].lower() or "rap" in matching_columns[0].lower():
-                        # Setze die "Hip Hop" und "Rap"-Spalten nur, wenn das Genre "hip hop" oder "rap" ist
-                        prediction_data.at[0, matching_columns[0]] = 1
+                    # Setze die erste gefundene Spalte auf 1
+                    prediction_data.at[0, matching_columns[0]] = 1
 
             # Füge Debugging-Ausgabe für das fertige prediction_data hinzu
-            #st.write("Final Prediction Data:")
-            ##st.write(prediction_data)
+            st.write("Final Prediction Data:")
+            st.write(prediction_data)
 
             
             # st.subheader("Track Information:")
@@ -266,7 +265,7 @@ if selected_track_id:
 
             df = pd.DataFrame(tracks_data)
             # st.write("Collected Data:")
-            # st.write(final_data)
+            st.write(final_data)
 
             # Laden Sie das trainierte Modell
             with open('model1.pkl', 'rb') as file:
