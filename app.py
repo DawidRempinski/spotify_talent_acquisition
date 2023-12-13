@@ -78,17 +78,40 @@ st.set_page_config(
     initial_sidebar_state="collapsed",  # Sidebar standardmäßig zugeklappt
 )
 
-#debug
-st.write(spotify_client_id)
-
 # Remove whitespace from the top of the page and sidebar
 st.markdown("""
         <style>
+                div[data-baseweb="input"] input {
+                    font-size: 1.3rem; /* Ändern Sie die Schriftgröße nach Bedarf */
+                }
+               
                .block-container {
                     padding-top: 1rem;
                     padding-bottom: 0rem;
                     padding-left: 0rem;
                     padding-right: 0rem;
+                }
+
+                .st-emotion-cache-xujc5b p {
+                    word-break: break-word;
+                    margin-bottom: 0px;
+                    font-size: 1.25rem; /* Ändern Sie die Schriftgröße nach Bedarf */
+                }
+
+                p, ol, ul, dl {
+                    margin: 0px 0px 1rem;
+                    padding: 0px;
+                    font-size: 1.25rem; /* Ändern Sie die Schriftgröße nach Bedarf */
+                    font-weight: 400;
+                }
+                .stRadio > div {
+                    display: flex;
+                    justify-content: center; /* Zentrierung in der Höhe */
+                }
+
+                .stRadio label {
+                    margin-left: 5px; /* Ändern Sie den Abstand nach Bedarf */
+                    line-height: 1.5rem; /* Zentrierung der Höhe */
                 }
         </style>
         """, unsafe_allow_html=True)
@@ -100,9 +123,6 @@ query = st.text_input("Search for a song:")
 
 # Variable zur Speicherung der ausgewählten Track-ID
 selected_track_id = None
-
-# Liste zur Speicherung der gesammelten Informationen
-tracks_data = []
 
 # Schritt 1: Auswahl des Songs
 if query:  # Nur wenn ein Suchbegriff vorhanden ist
@@ -268,7 +288,6 @@ if selected_track_id:
             # Hier erfolgt die Verknüpfung
             final_data = pd.concat([scaled_numeric_features_df, prediction_data], axis=1)
 
-            df = pd.DataFrame(tracks_data)
             # st.write("Collected Data:")
             #st.write(final_data)
 
