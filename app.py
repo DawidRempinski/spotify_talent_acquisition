@@ -8,6 +8,7 @@ import joblib
 import numpy as np
 import time
 import os
+from decouple import config
 
 # Spotify API-Funktionen
 
@@ -60,14 +61,14 @@ def get_track_info_and_features(track_id, access_token):
         st.error(f"Error getting track information and audio features for track ID {track_id}: {e}")
         return None, None
 
-# Streamlit-App-Code
-
-# Spotify Client ID und Client Secret
-spotify_client_id = "e5a4204c48a145c79cdeb4d1615859c5"
-spotify_client_secret = "575a8369b44c45dcb3389e48c6c81580"
+# Zugriff auf Umgebungsvariablen
+spotify_client_id = config("spotify_client_id")
+spotify_client_secret = config("spotify_client_secret")
 
 # Hole das Spotify Access Token
 spotify_access_token = get_access_token(spotify_client_id, spotify_client_secret)
+
+# Streamlit-App-Code
 
 # Setze die Hintergrundfarbe und Textfarbe
 st.set_page_config(
@@ -76,6 +77,9 @@ st.set_page_config(
     #layout="wide",
     initial_sidebar_state="collapsed",  # Sidebar standardmäßig zugeklappt
 )
+
+#debug
+st.write(spotify_client_id)
 
 # Remove whitespace from the top of the page and sidebar
 st.markdown("""
