@@ -63,8 +63,8 @@ def get_track_info_and_features(track_id, access_token):
 # Streamlit-App-Code
 
 # Spotify Client ID und Client Secret
-spotify_client_id = "6e91e7188379440ebbd0eb32a0e80c0f"
-spotify_client_secret = "ce22014bdc8e4c2b9fd79103289d9154"
+spotify_client_id = "e5a4204c48a145c79cdeb4d1615859c5"
+spotify_client_secret = "575a8369b44c45dcb3389e48c6c81580"
 
 # Hole das Spotify Access Token
 spotify_access_token = get_access_token(spotify_client_id, spotify_client_secret)
@@ -199,7 +199,7 @@ if selected_track_id:
                 artist_genres = []
 
             # Füge Debugging-Ausgabe hinzu
-            st.write(f"Artist Genres: {artist_genres}")
+            #st.write(f"Artist Genres: {artist_genres}")
 
             # DataFrame für bekannte Genres erstellen
             prediction_data = pd.DataFrame(columns=[
@@ -232,15 +232,15 @@ if selected_track_id:
                     matching_columns.extend([col for col in prediction_data.columns if "pop" in col.replace('genres_', '').lower() and "k-pop" not in col.replace('genres_', '').lower()])
 
                 # Debug-Ausgabe für die gefundenen und verglichenen Spalten
-                st.write(f"Genre: {lowercase_genre}, Matching Columns: {matching_columns}")
+                #st.write(f"Genre: {lowercase_genre}, Matching Columns: {matching_columns}")
 
                 if matching_columns:
                     # Setze die erste gefundene Spalte auf 1
                     prediction_data.at[0, matching_columns[0]] = 1
 
             # Füge Debugging-Ausgabe für das fertige prediction_data hinzu
-            st.write("Final Prediction Data:")
-            st.write(prediction_data)
+            #st.write("Final Prediction Data:")
+            #st.write(prediction_data)
 
             
             # st.subheader("Track Information:")
@@ -266,7 +266,7 @@ if selected_track_id:
 
             df = pd.DataFrame(tracks_data)
             # st.write("Collected Data:")
-            st.write(final_data)
+            #st.write(final_data)
 
             # Laden Sie das trainierte Modell
             with open('model1.pkl', 'rb') as file:
