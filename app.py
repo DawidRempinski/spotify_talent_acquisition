@@ -124,31 +124,33 @@ query = st.text_input("Search for a song:")
 # Variable zur Speicherung der ausgewählten Track-ID
 selected_track_id = None
 
+ph = st.empty()
+
 # Schritt 1: Auswahl des Songs
 if query:  # Nur wenn ein Suchbegriff vorhanden ist
     tracks = search_track(query, spotify_access_token)
     if tracks:
-        st.write("Found tracks:")
-        track_options = [f"{track['name']} by {', '.join([artist['name'] for artist in track['artists']])}" for track in tracks]
-        selected_track = st.radio("Select a track:", track_options)
+        with ph.container():
+            st.write("Found tracks:")
+            track_options = [f"{track['name']} by {', '.join([artist['name'] for artist in track['artists']])}" for track in tracks]
+            selected_track = st.radio("Select a track:", track_options)
 
-        # Der Benutzer hat auf die Schaltfläche geklickt, speichere die ausgewählte Track-ID
-        selected_track_id = [track['id'] for track in tracks if selected_track.startswith(track['name'])][0]
-        # st.success("Track selected successfully.")
-else:
-    # st.warning("Please enter a search query to find tracks.")
-    pass  # Füge diese Zeile hinzu, um die Warnung zu überspringen
-
-
+            # Der Benutzer hat auf die Schaltfläche geklickt, speichere die ausgewählte Track-ID
+            selected_track_id = [track['id'] for track in tracks if selected_track.startswith(track['name'])][0]
+            # st.success("Track selected successfully.")
+            # Display the prediction button
+            predict_button = st.button("Predict the popularity")
+            # Display the listen button
+            listen_button = st.button("Listen to the song")
+    else:
+        # st.warning("Please enter a search query to find tracks.")
+        pass  # Füge diese Zeile hinzu, um die Warnung zu überspringen
 
 # Schritt 2: Anzeigen der Track-Informationen und Audio-Features
 if selected_track_id:
-    # Display the prediction button
-    predict_button = st.button("Predict the popularity")
-    # Display the listen button
-    listen_button = st.button("Listen to the song")
     # Play song preview
     if listen_button:
+        ph.empty()
         track_data, audio_features = get_track_info_and_features(selected_track_id, spotify_access_token)
         preview_url = track_data.get('preview_url', None)
         if preview_url:
@@ -161,6 +163,7 @@ if selected_track_id:
             st.warning("No audio preview available for this track.")
     # Continue with predictions only if the Predict button is clicked
     if predict_button:
+        ph.empty()
         progress_text = "The prediction is being calculated... Please wait."
         my_bar = st.progress(0, text=progress_text)
 
