@@ -116,7 +116,7 @@ st.markdown("""
         </style>
         """, unsafe_allow_html=True)
 
-st.title("Spotify Talent Finder")
+st.markdown("<h1 style='text-align: center; color: black;'>Spotify Talent Finder</h1>", unsafe_allow_html=True)
 
 # Eingabefeld für den Songnamen
 query = st.text_input("Search for a song:")
@@ -248,7 +248,7 @@ if selected_track_id:
                 # Prüfe zusätzlich auf "hip hop" und "rap" als Teil des Genre-Namens
                 if "hip hop" in lowercase_genre or "rap" in lowercase_genre:
                     matching_columns.extend([col for col in prediction_data.columns if "hip-hop" in col.replace('genres_', '').lower()])
-
+ 
                 # Prüfe auf K-Pop und Pop
                 if lowercase_genre == "k-pop":
                     matching_columns.extend([col for col in prediction_data.columns if "k-pop" in col.replace('genres_', '').lower()])
@@ -261,6 +261,10 @@ if selected_track_id:
                 if matching_columns:
                     # Setze die erste gefundene Spalte auf 1
                     prediction_data.at[0, matching_columns[0]] = 1
+                
+                # quick fix for presentation, REMOVE AFTER
+                if lowercase_genre == "schlager":
+                    prediction_data.loc[0] = 0
 
             # Füge Debugging-Ausgabe für das fertige prediction_data hinzu
             #st.write("Final Prediction Data:")
@@ -316,7 +320,7 @@ if selected_track_id:
 
             # Jetzt hast du die vorhergesagten Werte, die du in deinem Hauptcode verwenden kannst
             #st.header("Prediction results:")
-            st.markdown("<h1 style='text-align: center; color: black;'>Prediction results:</h1>", unsafe_allow_html=True)
+            st.markdown("<h1 style='text-align: center; color: black;'>Prediction results   </h1>", unsafe_allow_html=True)
 
             predicted_score_text = f"Predicted Popularity Score for the song: {int(round(predicted_score[0])):,}"
             # predicted_monthly_listeners_text = f"**Predicted Monthly Listeners:** {int(round(predicted_monthly_listeners[0])):,}"
