@@ -323,7 +323,7 @@ if selected_track_id:
 
             # Jetzt hast du die vorhergesagten Werte, die du in deinem Hauptcode verwenden kannst
             #st.header("Prediction results:")
-            st.markdown("<h1 style='text-align: center; color: black;'>Prediction results   </h1>", unsafe_allow_html=True)
+            st.markdown("<h1 style='text-align: center; color: white;'>Prediction results   </h1>", unsafe_allow_html=True)
 
             predicted_score_text = f"Predicted Popularity Score for the song: {int(round(predicted_score[0])):,}"
             # predicted_monthly_listeners_text = f"**Predicted Monthly Listeners:** {int(round(predicted_monthly_listeners[0])):,}"
@@ -351,7 +351,7 @@ if selected_track_id:
 
                 # Füge die größere und auffälligere Ausgabe hinzu
                 st.markdown(
-                    f"<p style='font-size: 26px; color: black; text-align: center;'>{prefix_text}:"
+                    f"<p style='font-size: 26px; color: white; text-align: center;'>{prefix_text}:"
                     f"<span style='color: {score_color}; font-size: 26px; font-weight: bold;'>{suffix_text}</span></p>", 
                     unsafe_allow_html=True
                 )
@@ -366,7 +366,7 @@ if selected_track_id:
                 suffix_revenue = predicted_monthly_revenue_text.split(":")[1]
 
                 st.markdown(
-                    f"<p style='font-size: 26px; color: black; text-align: center;'>{prefix_revenue}: "
+                    f"<p style='font-size: 26px; color: white; text-align: center;'>{prefix_revenue}: "
                     f"<span style='color: black; font-size: 26px; font-weight: bold;'>{suffix_revenue}</span></p>", 
                     unsafe_allow_html=True
                 )
