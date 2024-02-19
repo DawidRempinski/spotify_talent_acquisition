@@ -116,7 +116,7 @@ st.markdown("""
         </style>
         """, unsafe_allow_html=True)
 
-st.markdown("<h1 style='text-align: center; color: black;'>Spotify Talent Finder</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center; color: white;'>Spotify Talent Finder</h1>", unsafe_allow_html=True)
 
 # Eingabefeld für den Songnamen
 query = st.text_input("Search for a song:")

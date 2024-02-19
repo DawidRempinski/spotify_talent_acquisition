@@ -16,7 +16,7 @@ echo "\
 [theme]\n\
 primaryColor = '#1DB954'\n\
 backgroundColor = '#191414'\n\
-secondaryBackgroundColor = '#191414'\n\
+secondaryBackgroundColor = '#1DB954'\n\
 textColor = '#FFFFFF'\n\
 font = 'sans serif'\n\
 " >> ~/.streamlit/config.toml
