@@ -367,7 +367,7 @@ if selected_track_id:
 
                 st.markdown(
                     f"<p style='font-size: 26px; color: white; text-align: center;'>{prefix_revenue}: "
-                    f"<span style='color: black; font-size: 26px; font-weight: bold;'>{suffix_revenue}</span></p>", 
+                    f"<span style='color: {revenue_color}; font-size: 26px; font-weight: bold;'>{suffix_revenue}</span></p>", 
                     unsafe_allow_html=True
                 )
 
