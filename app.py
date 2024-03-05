@@ -1,17 +1,15 @@
-import streamlit as st
 import base64
-import requests
+import numpy as np
+import os
 import pandas as pd
 import pickle
-from sklearn.preprocessing import RobustScaler
-import joblib
-import numpy as np
+import requests
+import streamlit as st
 import time
-import os
 from decouple import config
+from sklearn.preprocessing import RobustScaler
 
-# Spotify API-Funktionen
-
+# Spotify API functions
 def get_access_token(client_id, client_secret):
     token_url = "https://accounts.spotify.com/api/token"
     client_credentials = f"{client_id}:{client_secret}"
@@ -36,7 +34,7 @@ def search_track(query, access_token):
         response.raise_for_status()
         tracks = response.json().get('tracks', {}).get('items', [])
 
-        return tracks[:5]  # Begrenze auf die Top 5 Ergebnisse
+        return tracks[:5]  # Limit to top 5 results
     except requests.exceptions.RequestException as e:
         st.error(f"Error searching for track: {e}")
         return []
@@ -61,30 +59,27 @@ def get_track_info_and_features(track_id, access_token):
         st.error(f"Error getting track information and audio features for track ID {track_id}: {e}")
         return None, None
 
-# Zugriff auf Umgebungsvariablen
+# Access environment variables
 spotify_client_id = config("spotify_client_id")
 spotify_client_secret = config("spotify_client_secret")
 
-# Hole das Spotify Access Token
+# Get the Spotify Access Token
 spotify_access_token = get_access_token(spotify_client_id, spotify_client_secret)
 
-# Streamlit-App-Code
-
-# Setze die Hintergrundfarbe und Textfarbe
+# Streamlit App code
 st.set_page_config(
     page_title="Spotify Talent Finder",
     page_icon="🎸",
-    #layout="wide",
-    initial_sidebar_state="collapsed",  # Sidebar standardmäßig zugeklappt
+    initial_sidebar_state="collapsed",  # Sidebar initially collapsed
 )
 
 # Remove whitespace from the top of the page and sidebar
 st.markdown("""
         <style>
                 div[data-baseweb="input"] input {
-                    font-size: 1.3rem; /* Ändern Sie die Schriftgröße nach Bedarf */
+                    font-size: 1.3rem; /* Change font size as needed */
                 }
-               
+
                .block-container {
                     padding-top: 1rem;
                     padding-bottom: 0rem;
@@ -95,39 +90,39 @@ st.markdown("""
                 .st-emotion-cache-xujc5b p {
                     word-break: break-word;
                     margin-bottom: 0px;
-                    font-size: 1.25rem; /* Ändern Sie die Schriftgröße nach Bedarf */
+                    font-size: 1.25rem; /* Change font size as needed */
                 }
 
                 p, ol, ul, dl {
                     margin: 0px 0px 1rem;
                     padding: 0px;
-                    font-size: 1.25rem; /* Ändern Sie die Schriftgröße nach Bedarf */
+                    font-size: 1.25rem; /* Change font size as needed */
                     font-weight: 400;
                 }
                 .stRadio > div {
                     display: flex;
-                    justify-content: center; /* Zentrierung in der Höhe */
+                    justify-content: center; /* Center alignment */
                 }
 
                 .stRadio label {
-                    margin-left: 5px; /* Ändern Sie den Abstand nach Bedarf */
-                    line-height: 1.5rem; /* Zentrierung der Höhe */
+                    margin-left: 5px; /* Change margin as needed */
+                    line-height: 1.5rem; /* Center height */
                 }
         </style>
         """, unsafe_allow_html=True)
 
 st.markdown("<h1 style='text-align: center; color: white;'>Spotify Talent Finder</h1>", unsafe_allow_html=True)
 
-# Eingabefeld für den Songnamen
+# Input field for the song name
 query = st.text_input("Search for a song:")
 
-# Variable zur Speicherung der ausgewählten Track-ID
+# Variable to store the selected track ID
 selected_track_id = None
 
 ph = st.empty()
 
-# Schritt 1: Auswahl des Songs
-if query:  # Nur wenn ein Suchbegriff vorhanden ist
+# Step 1: Select the song
+if query:  # Only if a search query is present
     tracks = search_track(query, spotify_access_token)
     if tracks:
         with ph.container():
@@ -135,18 +130,17 @@ if query:  # Nur wenn ein Suchbegriff vorhanden ist
             track_options = [f"{track['name']} by {', '.join([artist['name'] for artist in track['artists']])}" for track in tracks]
             selected_track = st.radio("Select a track:", track_options)
 
-            # Der Benutzer hat auf die Schaltfläche geklickt, speichere die ausgewählte Track-ID
+            # User clicked the button, store the selected track ID
             selected_track_id = [track['id'] for track in tracks if selected_track.startswith(track['name'])][0]
-            # st.success("Track selected successfully.")
+
             # Display the prediction button
             predict_button = st.button("Predict the popularity")
             # Display the listen button
             listen_button = st.button("Listen to the song")
     else:
-        # st.warning("Please enter a search query to find tracks.")
-        pass  # Füge diese Zeile hinzu, um die Warnung zu überspringen
+        pass  # Skip the warning
 
-# Schritt 2: Anzeigen der Track-Informationen und Audio-Features
+# Step 2: Display track information and audio features
 if selected_track_id:
     # Play song preview
     if listen_button:
@@ -156,11 +150,12 @@ if selected_track_id:
         if preview_url:
             st.subheader("Audio Preview:")
 
-            # Verwende st.audio mit JavaScript autoplay
+            # Use st.audio with JavaScript autoplay
             audio_code = f'<audio controls autoplay><source src="{preview_url}" type="audio/mp3"></audio>'
             st.markdown(audio_code, unsafe_allow_html=True)
         else:
             st.warning("No audio preview available for this track.")
+
     # Continue with predictions only if the Predict button is clicked
     if predict_button:
         ph.empty()
@@ -172,12 +167,12 @@ if selected_track_id:
             my_bar.progress(percent_complete + 1, text=progress_text)
         time.sleep(0.5)
         my_bar.empty()
-        # Hole Track-Informationen und Audio-Features für den ausgewählten Track
+
+        # Get Track information and audio features for the selected track
         track_data, audio_features = get_track_info_and_features(selected_track_id, spotify_access_token)
 
         if track_data and audio_features:
-                         
-            # Extrahiere die numerischen Features
+            # Extract numerical features
             danceability = audio_features['danceability']
             energy = audio_features['energy']
             loudness = audio_features['loudness']
@@ -189,11 +184,11 @@ if selected_track_id:
             duration_ms = audio_features['duration_ms']
             instrumentalness = audio_features['instrumentalness']
 
-            # Release Year aus dem Release Date extrahieren
+            # Extract release year from release date
             release_date = track_data['album']['release_date']
             release_year = pd.to_datetime(release_date).year
 
-            # Erstelle ein DataFrame für numerische Features
+            # Create a DataFrame for numerical features
             numeric_features_data = pd.DataFrame({
                 'danceability': [danceability],
                 'energy': [energy],
@@ -208,7 +203,7 @@ if selected_track_id:
                 'instrumentalness': [instrumentalness]
             })
 
-            # Stelle die Verbindung mit der Spotify API her, um die Genres des Künstlers zu erhalten
+            # Connect to the Spotify API to get the artist's genres
             artist_id = track_data['artists'][0]['id']
             artist_info_url = f'https://api.spotify.com/v1/artists/{artist_id}'
             artist_headers = {'Authorization': f'Bearer {spotify_access_token}'}
@@ -218,17 +213,14 @@ if selected_track_id:
                 artist_response.raise_for_status()
                 artist_info = artist_response.json()
 
-                # Extrahiere das Genre des Künstlers
-                artist_genres = artist_info.get('genres', [])  # Liste der Künstler-Genres
+                # Extract the artist's genres
+                artist_genres = artist_info.get('genres', [])  # List of artist genres
 
             except requests.exceptions.RequestException as e:
                 st.error(f"Error getting artist information for artist ID {artist_id}: {e}")
                 artist_genres = []
 
-            # Füge Debugging-Ausgabe hinzu
-            #st.write(f"Artist Genres: {artist_genres}")
-
-            # DataFrame für bekannte Genres erstellen
+            # Create a DataFrame for known genres
             prediction_data = pd.DataFrame(columns=[
                 'genres_Afro', 'genres_Alternative', 'genres_Ambient', 'genres_Blues',
                 'genres_Christian & Gospel', 'genres_Classical', 'genres_Country',
@@ -238,140 +230,111 @@ if selected_track_id:
                 'genres_Soul'
             ])
 
-            # Überall 0 setzen
+            # Set 0 everywhere
             prediction_data.loc[0] = 0
 
-            # Prüfe, ob ein Künstler-Genre zu den Spaltennamen passt, und setze die entsprechende Spalte auf 1
+            # Check if an artist genre matches the column names and set the corresponding column to 1
             for genre in artist_genres:
                 lowercase_genre = genre.lower()
 
-                # Suche nach exakten Übereinstimmungen in den normalisierten Spaltennamen
+                # Search for exact matches in the normalized column names
                 matching_columns = [col for col in prediction_data.columns if lowercase_genre == col.replace('genres_', '').lower()]
 
-                # Prüfe zusätzlich auf "hip hop" und "rap" als Teil des Genre-Namens
+                # Also check for "hip hop" and "rap" as part of the genre name
                 if "hip hop" in lowercase_genre or "rap" in lowercase_genre:
                     matching_columns.extend([col for col in prediction_data.columns if "hip-hop" in col.replace('genres_', '').lower()])
- 
-                # Prüfe auf K-Pop und Pop
+
+                # Check for K-Pop and Pop
                 if lowercase_genre == "k-pop":
                     matching_columns.extend([col for col in prediction_data.columns if "k-pop" in col.replace('genres_', '').lower()])
                 elif "pop" in lowercase_genre:
                     matching_columns.extend([col for col in prediction_data.columns if "pop" in col.replace('genres_', '').lower() and "k-pop" not in col.replace('genres_', '').lower()])
 
-                # Debug-Ausgabe für die gefundenen und verglichenen Spalten
-                #st.write(f"Genre: {lowercase_genre}, Matching Columns: {matching_columns}")
-
                 if matching_columns:
-                    # Setze die erste gefundene Spalte auf 1
+                    # Set the first found column to 1
                     prediction_data.at[0, matching_columns[0]] = 1
-                
-                # quick fix for presentation, REMOVE AFTER
+
+                # Quick fix for presentation, REMOVE AFTER
                 if lowercase_genre == "schlager":
                     prediction_data.loc[0] = 0
 
-            # Füge Debugging-Ausgabe für das fertige prediction_data hinzu
-            #st.write("Final Prediction Data:")
-            #st.write(prediction_data)
-
-            
-            # st.subheader("Track Information:")
-            # st.write(f"Name: {track_data['name']}")
-            # st.write(f"Artist: {track_data['artists'][0]['name']}")
-            # st.write(f"Popularity: {track_data['popularity']}")
-            # st.write(f"Release Date: {track_data['album']['release_date']}")
-            # st.write(f"Track ID: {track_data['id']}")
-
-            #st.subheader("Audio Features:")
-            #st.write(audio_features)
-
-            # Laden Sie die gespeicherten Scaler-Parameter
+            # Load the saved scaler parameters
             with open('scaler.joblib', 'rb') as file:
                 scaler = joblib.load(file)
 
-            # Skaliere die numerischen Features
+            # Scale the numerical features
             scaled_numeric_features = scaler.transform(numeric_features_data)
             scaled_numeric_features_df = pd.DataFrame(scaled_numeric_features, columns=numeric_features_data.columns)
 
-            # Hier erfolgt die Verknüpfung
+            # Here the merging happens
             final_data = pd.concat([scaled_numeric_features_df, prediction_data], axis=1)
 
-            # st.write("Collected Data:")
-            #st.write(final_data)
-
-            # Laden Sie das trainierte Modell
+            # Load the trained model
             with open('model1.pkl', 'rb') as file:
                 trained_model = pickle.load(file)
 
-            # Extrahiere die Features für die Vorhersage
-            features_for_prediction = final_data.values.reshape(1, -1)  # Reshape für eine einzelne Beobachtung
+            # Extract features for prediction
+            features_for_prediction = final_data.values.reshape(1, -1)  # Reshape for a single observation
 
-            # Führe die Vorhersage durch
+            # Perform the prediction
             predicted_score = trained_model.predict(features_for_prediction)
 
-            # Lade das zweite Modell
+            # Load the second model
             loaded_model = pickle.load(open("monthly_listeners_model.pkl", "rb"))
 
-            # Annahme: predicted_score ist der vorhergesagte Wert
+            # Assumption: predicted_score is the predicted value
             pred_score = predicted_score
 
-            # Führe die Vorhersage durch
+            # Perform the prediction
             predicted_monthly_listeners = loaded_model.predict([pred_score])
 
-            # Berechne zusätzliche Metriken basierend auf der Vorhersage
+            # Calculate additional metrics based on the prediction
             predicted_monthly_streams = predicted_monthly_listeners * 2.5
             predicted_monthly_revenue = predicted_monthly_streams * 0.004
 
-            # Jetzt hast du die vorhergesagten Werte, die du in deinem Hauptcode verwenden kannst
-            #st.header("Prediction results:")
+            # Now you have the predicted values that you can use in your main code
             st.markdown("<h1 style='text-align: center; color: white;'>Prediction results   </h1>", unsafe_allow_html=True)
 
             predicted_score_text = f"Predicted Popularity Score for the song: {int(round(predicted_score[0])):,}"
-            # predicted_monthly_listeners_text = f"**Predicted Monthly Listeners:** {int(round(predicted_monthly_listeners[0])):,}"
-            # predicted_monthly_streams_text = f"**Predicted Monthly Streams:** {int(round(predicted_monthly_streams[0])):,}"
             predicted_monthly_revenue_text = f"Predicted Monthly Revenue for the artist of the song: ${round(predicted_monthly_revenue[0], 2):,}"
 
-            # Verwende 'success' für positive Ergebnisse
-            # Wenn kein passendes Genre gefunden wurde, gib eine Warnung aus
-            #if prediction_data.iloc[0].sum() == 0:
-                #st.error("Be careful with the result! It could be inaccurate because no genre was found for the song that fits the prediction model.", icon="🚨")
-
-            # Erstelle einen Container mit abweichender Hintergrundfarbe
+            # Create a container with a different background color
             with st.container():
                 # Save artist name
                 artist_name = track_data['artists'][0]['name']
-                
-                # Setze die Farbe des Scores basierend auf der Bedingung
+
+                # Set the color of the score based on the condition
                 score_color = "#1DB954" if predicted_score[0] >= 50 else "#FF0000"
-                
-                # Extrahiere den Text vor dem Doppelpunkt
+
+                # Extract the text before the colon
                 prefix_text = predicted_score_text.split(":")[0]
-                
-                # Extrahiere den Text nach dem Doppelpunkt
+
+                # Extract the text after the colon
                 suffix_text = predicted_score_text.split(":")[1]
 
-                # Füge die größere und auffälligere Ausgabe hinzu
+                # Add the larger and more noticeable output
                 st.markdown(
                     f"<p style='font-size: 26px; color: white; text-align: center;'>{prefix_text}:"
-                    f"<span style='color: {score_color}; font-size: 26px; font-weight: bold;'>{suffix_text}</span></p>", 
+                    f"<span style='color: {score_color}; font-size: 26px; font-weight: bold;'>{suffix_text}</span></p>",
                     unsafe_allow_html=True
                 )
 
-                # Setze die Farbe des Revenue basierend auf der Bedingung
+                # Set the color of the revenue based on the condition
                 revenue_color = "#1DB954" if predicted_monthly_revenue[0] >= 20000 else "#FF0000"
-                
-                # Extrahiere den Text vor dem Doppelpunkt
+
+                # Extract the text before the colon
                 prefix_revenue = predicted_monthly_revenue_text.split(":")[0]
-                
-                # Extrahiere den Text nach dem Doppelpunkt
+
+                # Extract the text after the colon
                 suffix_revenue = predicted_monthly_revenue_text.split(":")[1]
 
                 st.markdown(
                     f"<p style='font-size: 26px; color: white; text-align: center;'>{prefix_revenue}: "
-                    f"<span style='color: {revenue_color}; font-size: 26px; font-weight: bold;'>{suffix_revenue}</span></p>", 
+                    f"<span style='color: {revenue_color}; font-size: 26px; font-weight: bold;'>{suffix_revenue}</span></p>",
                     unsafe_allow_html=True
                 )
 
-                # Bedingte Anzeige von zusätzlichem Text basierend auf dem Revenue
+                # Conditionally display additional text based on the revenue
                 if predicted_score[0] < 50:
                     st.markdown(
                         f"<p style='font-size: 26px; color: #FF0000; text-align: center; font-weight: bold;'>The predicted score and monthly revenue is pretty low. Probably we should not sign {artist_name}</p>",
@@ -383,18 +346,17 @@ if selected_track_id:
                         unsafe_allow_html=True
                     )
 
-            # Extrahiere die Vorschau-URL des Tracks
+            # Extract the track's preview URL
             preview_url = track_data.get('preview_url', None)
-            
+
             if preview_url:
                 st.subheader("Audio Preview:")
 
-                # Verwende st.audio mit JavaScript autoplay
+                # Use st.audio with JavaScript autoplay
                 audio_code = f'<audio controls autoplay><source src="{preview_url}" type="audio/mp3"></audio>'
                 st.markdown(audio_code, unsafe_allow_html=True)
             else:
                 st.warning("No audio preview available for this track.")
 
-            
         else:
             st.error("Error getting track information and audio features.")
